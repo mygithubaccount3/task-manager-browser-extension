@@ -37,7 +37,7 @@ function getCards (destination: string, context: ActionContext<{ cards: CardInte
   }
 }
 
-function saveCards (destination: string, cards: CardInterface[], card: CardInterface, context: ActionContext<{ cards: CardInterface[]; alert: string }, {
+function saveCards (destination: string, cards: CardInterface[], card: any, context: ActionContext<{ cards: CardInterface[]; alert: string }, {
   cards: CardInterface[];
   alert: string;
 }>) {
@@ -53,9 +53,37 @@ function saveCards (destination: string, cards: CardInterface[], card: CardInter
         context.commit('showError', 'Error occured: Your browser does not support localStorage. This app will not work')
       }
       break
-    case 'heroku':
+    case 'heroku_create':
       return apiService.createCard(card.title, card.description)
         .then(res => {
+          if (localStorage) {
+            try {
+              localStorage.setItem(res._id, card.parentColumn)
+            } catch (e) {
+              context.commit('showError', `Error occured: ${e.message}`)
+            }
+          } else {
+            context.commit('showError', 'Error occured: Your browser does not support localStorage. This app will not work')
+          }
+          return res
+        })
+        .catch(error => {
+          context.commit('showError', `Error occured: ${error.message}`)
+          return []
+        })
+    case 'heroku_update':
+      return apiService.updateCard(card.card.id, card.card.title, card.card.description)
+        .then(res => {
+          if (localStorage) {
+            try {
+              localStorage.removeItem(card.card.id)
+              localStorage.setItem(res._id, card.card.parentColumn)
+            } catch (e) {
+              context.commit('showError', `Error occured: ${e.message}`)
+            }
+          } else {
+            context.commit('showError', 'Error occured: Your browser does not support localStorage. This app will not work')
+          }
           return res
         })
         .catch(error => {
@@ -84,7 +112,7 @@ export default new Vuex.Store({
       state.cards.push(payload)
     },
     updateExistingCard (state, payload) {
-      const elIndex = state.cards.findIndex((el: CardInterface) => el._id === payload.card.id)
+      const elIndex = state.cards.findIndex((el: CardInterface) => el._id === payload.oldID)
       if (payload.futureIndex !== null) {
         state.cards.splice(elIndex, 1)
         state.cards.splice(payload.futureIndex, 0, payload.card)
@@ -117,12 +145,12 @@ export default new Vuex.Store({
       }
     },
     async addNewCard (context, payload) {
-      const newCard = await saveCards('heroku', context.state.cards, payload, context)
+      const newCard = await saveCards('heroku_create', context.state.cards, payload, context)
       context.commit('addNewCard', newCard)
     },
-    updateExistingCard (context, payload) {
-      context.commit('updateExistingCard', payload)
-      saveCards('localStorage', context.state.cards, payload, context)
+    async updateExistingCard (context, payload) {
+      const updatedCard = await saveCards('heroku_update', context.state.cards, payload, context)
+      context.commit('updateExistingCard', { card: updatedCard, oldID: payload.card.id, futureIndex: payload.futureIndex })
     },
     removeCard (context, payload) {
       context.commit('removeCard', payload)

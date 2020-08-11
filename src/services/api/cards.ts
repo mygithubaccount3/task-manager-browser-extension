@@ -13,6 +13,10 @@ export default class CardsApi {
     return await (new NetworkService('https://raysael.herokuapp.com')).post('/todo', { data: { author: 'null@null.null', title, description } })
   }
 
+  async updateCard (id: string, title: string, description: string) {
+    return await (new NetworkService('https://raysael.herokuapp.com')).update(`/todo/${id}`, { data: { title, description } })
+  }
+
   async removeCard (id: string) {
     return await (new NetworkService('https://raysael.herokuapp.com')).delete(`/todo/${id}`)
   }

@@ -43,7 +43,7 @@ import { Prop, Ref } from 'vue-property-decorator'
 import { MutationMethod, ActionMethod } from 'vuex'
 import { Mutation, Action } from 'vuex-class'
 import { CardInterface } from '../interfaces/Card'
-import Popup from './ImagesPopup.vue'
+// import Popup from './ImagesPopup.vue'
 
 @Component
 export default class Drawer extends Vue {
@@ -70,7 +70,8 @@ export default class Drawer extends Vue {
       if (this.titleRef.value && this.textRef.value && this.selectRef.value) {
         const card = {
           title: this.titleRef.value,
-          description: this.textRef.value
+          description: this.textRef.value,
+          parentColumn: this.selectRef.value
         }
         this.addNewCard(card)
       } else {

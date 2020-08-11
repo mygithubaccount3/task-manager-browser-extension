@@ -4,5 +4,6 @@ export interface CardInterface {
     title: string;
     description: string;
     created_date?: string;
+    parentColumn: string;
     __v?: number;
 }

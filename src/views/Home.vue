@@ -30,7 +30,7 @@ export default class Home extends Vue {
 
   @Action fetchAllCards!: ActionMethod
 
-  card: CardInterface = { title: '', description: '' }
+  card: CardInterface = { title: '', description: '', parentColumn: '' }
   email: string | null = '';
   showDrawer = false;
   drawerForCreatingColumn = false;
@@ -68,7 +68,7 @@ export default class Home extends Vue {
 
   closeDrawer () {
     this.showDrawer = false
-    this.card = { title: '', description: '' }
+    this.card = { title: '', description: '', parentColumn: '' }
   }
 }
 </script>

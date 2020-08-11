@@ -31,26 +31,38 @@ import Card from './Card.vue'
 export default class CardList extends Vue {
   @Prop() private columnTitle!: string;
 
-  cardToUpdate: CardInterface = {
+  cardToUpdate = {
+    id: '',
     title: '',
-    description: ''
+    description: '',
+    parentColumn: ''
   }
 
   futureIndex = -1
 
   get cards () {
-    return this.$store.state.cards
+    return this.$store.state.cards.filter((card: CardInterface) => {
+      const storageItem = localStorage.getItem(card._id!)
+      if (storageItem) {
+        return storageItem === this.columnTitle
+      }
+    })
   }
 
   set cards (val) {
-    this.$store.dispatch('updateExistingCard', { card: this.cardToUpdate, futureIndex: this.futureIndex })
+    const storageItem = localStorage.getItem(this.cardToUpdate.id)
+    if (storageItem === this.columnTitle) {
+      this.$store.dispatch('updateExistingCard', { card: this.cardToUpdate, futureIndex: this.futureIndex })
+    }
   }
 
   move (e: any) {
     const card = e.draggedContext.element
     this.cardToUpdate = {
+      id: card._id,
       title: card.title,
-      description: card.description
+      description: card.description,
+      parentColumn: e.relatedContext.component.$parent.$el.children[0].innerText
     }
     this.futureIndex = e.draggedContext.futureIndex
   }

@@ -30,15 +30,16 @@ export default class AlertModal extends Vue {
 }
 
 .modal-container {
+  box-sizing: border-box;
   position: absolute;
-  left: calc(50% - 150px);
+  left: calc(50% - 125px);
   flex-direction: column;
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   height: auto;
-  width: 300px;
+  width: 250px;
   margin: 0px auto;
   padding: 20px 30px;
   padding-top: 0;

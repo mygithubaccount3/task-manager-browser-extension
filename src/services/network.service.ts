@@ -43,6 +43,15 @@ class NetworkService {
     return result
   }
 
+  public async update (
+    url: string,
+    options?: AxiosRequestConfig
+  ): Promise<any> {
+    const request = () => this.api.patch(url, options?.data, { ...options, cancelToken: NetworkService.source.token })
+    const result = await this.requestHandler(request)
+    return result
+  }
+
   public async delete (
     url: string
   ): Promise<any> {
