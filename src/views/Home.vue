@@ -30,7 +30,7 @@ export default class Home extends Vue {
 
   @Action fetchAllCards!: ActionMethod
 
-  card: CardInterface = { title: '', description: '', parentColumn: '' }
+  card: CardInterface = { _id: '', title: '', description: '', parentColumn: '' }
   email: string | null = '';
   showDrawer = false;
   drawerForCreatingColumn = false;
@@ -62,13 +62,14 @@ export default class Home extends Vue {
   }
 
   openEditingDrawer (card: CardInterface) {
-    this.card = card
+    const column = localStorage.getItem(card._id!)
+    this.card = { _id: card._id, title: card.title, description: card.description, parentColumn: column! }
     this.openDrawer(false)
   }
 
   closeDrawer () {
     this.showDrawer = false
-    this.card = { title: '', description: '', parentColumn: '' }
+    this.card = { _id: '', title: '', description: '', parentColumn: '' }
   }
 }
 </script>

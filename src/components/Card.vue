@@ -63,6 +63,7 @@ export default class Cards extends Vue {
     border-radius: 10px;
     margin-bottom: 30px;
     padding: 10px;
+    width: 40%;
 }
 
 .cardsWrapper {

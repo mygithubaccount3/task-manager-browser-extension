@@ -12,7 +12,7 @@
           :card="card"
           v-for="card in cards"
           :key="card._id"
-          @openEditingDrawer="openEditingDrawer"
+          @openEditingDrawer="openEditingDrawer(card)"
         />
       </draggable>
     </ul>
@@ -79,6 +79,7 @@ export default class CardList extends Vue {
 .cardColumnWrapper {
   border: 1px solid black;
   display: inline-block;
+  margin-bottom: 10px;
   min-width: 150px;
   padding: 15px;
   width: 25%;
@@ -95,5 +96,11 @@ export default class CardList extends Vue {
 .cardColumn {
   padding: 0;
   list-style-type: none;
+
+  & div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 }
 </style>

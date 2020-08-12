@@ -14,7 +14,7 @@
           <label class="drawer__fieldLabel" v-if="!drawerForCreatingColumn">
             Description:
             <textarea
-              :value="card.text"
+              :value="card.description"
               rows="7"
               class="drawer__descriptionInput"
               ref="textRef"
