@@ -1,19 +1,17 @@
 {
   "manifest_version": 2,
-  "name": "__MSG_extName__",
-  "homepage_url": "http://localhost:8080/",
+  "name": "Task Manager",
+  "homepage_url": "https://github.com/mygithubaccount3/task-manager-browser-extension",
   "description": "A Vue Browser Extension",
   "default_locale": "en",
-  "permissions": [
-    "tabs",
-    "<all_urls>",
-    "*://*/*"
-  ],
   "icons": {
     "16": "icons/16.png",
     "48": "icons/48.png",
     "128": "icons/128.png"
   },
+  "permissions": [
+    "storage"
+  ],
   "background": {
     "scripts": [
       "js/background.js"
@@ -22,7 +20,7 @@
   },
   "browser_action": {
     "default_popup": "popup.html",
-    "default_title": "__MSG_extName__",
+    "default_title": "Task Manager",
     "default_icon": {
       "19": "icons/19.png",
       "38": "icons/38.png"

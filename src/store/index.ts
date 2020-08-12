@@ -72,7 +72,7 @@ function saveCards (destination: string, cards: CardInterface[], card: any, cont
           return []
         })
     case 'heroku_update':
-      return apiService.updateCard(card.card.id, card.card.title, card.card.description)
+      return apiService.updateCard(card.card.id, card.card.title, card.card.text)
         .then(res => {
           if (localStorage) {
             try {
