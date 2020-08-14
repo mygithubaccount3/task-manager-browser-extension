@@ -5,7 +5,7 @@ import apiService from '../services/api.service'
 
 Vue.use(Vuex)
 
-function getCards (destination: string, context: ActionContext<{ cards: CardInterface[]; alert: string }, {
+async function getCards (destination: string, context: ActionContext<{ cards: CardInterface[]; alert: string }, {
   cards: CardInterface[];
   alert: string;
 }>) {
@@ -23,9 +23,12 @@ function getCards (destination: string, context: ActionContext<{ cards: CardInte
         return '[]'
       }
     case 'heroku':
-      return apiService.fetchUserCards()
+      return await browser.runtime.sendMessage({ action: 'fetch' })
         .then(res => {
-          return res
+          return res.cards
+        }, error => {
+          context.commit('showError', `Error occured: ${error.message}`)
+          return []
         })
         .catch(error => {
           context.commit('showError', `Error occured: ${error.message}`)
@@ -37,7 +40,7 @@ function getCards (destination: string, context: ActionContext<{ cards: CardInte
   }
 }
 
-function saveCards (destination: string, cards: CardInterface[], card: any, context: ActionContext<{ cards: CardInterface[]; alert: string }, {
+async function saveCards (destination: string, cards: CardInterface[], card: any, context: ActionContext<{ cards: CardInterface[]; alert: string }, {
   cards: CardInterface[];
   alert: string;
 }>) {
@@ -54,41 +57,47 @@ function saveCards (destination: string, cards: CardInterface[], card: any, cont
       }
       break
     case 'heroku_create':
-      return apiService.createCard(card.title, card.description)
+      return await browser.runtime.sendMessage({ action: 'create', title: card.title, description: card.description })
         .then(res => {
           if (localStorage) {
             try {
-              localStorage.setItem(res._id, card.parentColumn)
+              localStorage.setItem(res.newCard._id, card.parentColumn)
             } catch (e) {
               context.commit('showError', `Error occured: ${e.message}`)
             }
           } else {
             context.commit('showError', 'Error occured: Your browser does not support localStorage. This app will not work')
           }
-          return res
+          return res.newCard
+        }, error => {
+          context.commit('showError', `Error occured: ${error.message}`)
+          return {}
         })
         .catch(error => {
           context.commit('showError', `Error occured: ${error.message}`)
-          return []
+          return {}
         })
     case 'heroku_update':
-      return apiService.updateCard(card.card.id, card.card.title, card.card.text)
+      return await browser.runtime.sendMessage({ action: 'update', id: card.card.id, title: card.card.title, text: card.card.text })
         .then(res => {
           if (localStorage) {
             try {
               localStorage.removeItem(card.card.id)
-              localStorage.setItem(res._id, card.card.parentColumn)
+              localStorage.setItem(res.updatedCard._id, card.card.parentColumn)
             } catch (e) {
               context.commit('showError', `Error occured: ${e.message}`)
             }
           } else {
             context.commit('showError', 'Error occured: Your browser does not support localStorage. This app will not work')
           }
-          return res
+          return res.updatedCard
+        }, error => {
+          context.commit('showError', `Error occured: ${error.message}`)
+          return {}
         })
         .catch(error => {
           context.commit('showError', `Error occured: ${error.message}`)
-          return []
+          return {}
         })
     default:
       context.commit('showError', 'Error occured: cards are not saved')
@@ -139,9 +148,10 @@ export default new Vuex.Store({
       const remoteCards = await getCards('heroku', context)
       context.commit('clear')
       context.commit('saveCardsFromLocalStorage', remoteCards)
-      const columns = localStorage.getItem('columns') ? JSON.parse(localStorage.getItem('columns')!) : null
-      if (columns) {
-        context.commit('pushColumn', columns)
+      const columns = localStorage.getItem('columns')
+      const parsedColumns = columns ? JSON.parse(columns) : null
+      if (parsedColumns) {
+        context.commit('pushColumn', parsedColumns)
       }
     },
     async addNewCard (context, payload) {

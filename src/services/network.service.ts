@@ -3,9 +3,6 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 class NetworkService {
   private api: AxiosInstance
 
-  static CancelToken = axios.CancelToken
-  static source = NetworkService.CancelToken.source()
-
   constructor (baseURL: string) {
     this.api = axios.create({
       baseURL: baseURL,
@@ -29,7 +26,7 @@ class NetworkService {
     url: string,
     options?: AxiosRequestConfig
   ): Promise<any> {
-    const request = () => this.api.get(url, { ...options, cancelToken: NetworkService.source.token })
+    const request = () => this.api.get(url, options)
     const result = await this.requestHandler(request)
     return result
   }
@@ -38,7 +35,7 @@ class NetworkService {
     url: string,
     options?: AxiosRequestConfig
   ): Promise<any> {
-    const request = () => this.api.post(url, options?.data, { ...options, cancelToken: NetworkService.source.token })
+    const request = () => this.api.post(url, options?.data, options)
     const result = await this.requestHandler(request)
     return result
   }
@@ -47,7 +44,7 @@ class NetworkService {
     url: string,
     options?: AxiosRequestConfig
   ): Promise<any> {
-    const request = () => this.api.patch(url, options?.data, { ...options, cancelToken: NetworkService.source.token })
+    const request = () => this.api.patch(url, options?.data, options)
     const result = await this.requestHandler(request)
     return result
   }
@@ -55,7 +52,7 @@ class NetworkService {
   public async delete (
     url: string
   ): Promise<any> {
-    const request = () => this.api.delete(url, { cancelToken: NetworkService.source.token })
+    const request = () => this.api.delete(url)
     const result = await this.requestHandler(request)
     return result
   }
